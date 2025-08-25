@@ -1,6 +1,2 @@
 # OLILANG 
-
-VERSAO=1.0.0
-VERSAO_JAVA=17.0.0
-INDEX=index.ol
-CONFIG_PATH=/configs/
+INDEX = index.ol

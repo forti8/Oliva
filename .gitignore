@@ -1,4 +1,4 @@
-bin/
-configs/
+/bin/
+/configs/
 
 .gitignore

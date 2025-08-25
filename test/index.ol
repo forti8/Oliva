@@ -1,2 +1,2 @@
-ola
-mundo
+console.out()
+console.in()
