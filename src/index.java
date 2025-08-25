@@ -45,6 +45,33 @@ public class index {
         // caminho do arquivo executado, por padrão index.ExtensãoVálida
         String Caminho = "index" + ExtensaoValida;
 
+        // variavel temporaria
+        if (true) {
+            
+            // tenta verificar o arquivo de configuração da linguagem
+            File ArquivoDeConfig = new File("./configs/.config.ol");
+
+            // se o arquivo de configuração existe
+            if (ArquivoDeConfig.exists()) {
+    
+                // instancia usando a classe oli Arquivo
+                Arquivo a = new Arquivo("./configs/.config.ol");
+    
+                // linha que contem conteudo (-1 caso não exista)
+                int IndexDaLinha = a.ProcurarPor("INDEX");
+    
+                // resgata o conteudo da linha
+                String ConteudoDaLinha = a.LerLinha(IndexDaLinha);
+
+                // remove espaços
+                ConteudoDaLinha = ConteudoDaLinha.replaceAll(" ", "");
+
+                // sem os espaços sobre INDEX={caminho}
+                ConteudoDaLinha = ConteudoDaLinha.replaceFirst("INDEX=", "");
+                Caminho = ConteudoDaLinha;
+            }
+        }
+
         // para cada argumento contido em args
         for (String Argumento : args) {
             
@@ -116,13 +143,11 @@ public class index {
                 // se o arquivo for de uma extensão valida
                 if (Argumento.endsWith(ExtensaoValida)) Caminho = Argumento;
             }
-
-            
         }
 
         // instância que vai armazenar o arquivo que será lido
         Arquivo ArquivoLido = new Arquivo(Caminho);
-
+        
         // tenta efetuar a leitura do arquivo
         if(!comandoUsado) ArquivoLido.Ler();
     }
