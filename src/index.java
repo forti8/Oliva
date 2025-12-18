@@ -1,3 +1,8 @@
+import java.io.File;
+import java.io.IOException;
+import java.lang.ProcessBuilder;
+import java.lang.InterruptedException;
+
 // classe index
 public class index {
 
@@ -55,7 +60,42 @@ public class index {
                 Argumento = Argumento.replaceFirst(PrefixoDeExecucao, "");
                 Argumento.toLowerCase();
 
+                // -config-file
                 if (bool(Argumento.compareTo("config-file"), true)) {
+
+                    // novo arquivo de configuração .config.ol
+                    File NovoArquivoDeConfig  = new File(".config.ol");
+                    
+                    // verifica se o arquivo existe
+                    if (!(NovoArquivoDeConfig.exists())) {
+
+                        // se não existir tenta criar
+                        try {
+
+                            // cria o arquivo
+                            NovoArquivoDeConfig.createNewFile();
+                        }
+                        
+                        // caso de uma exception
+                        catch (IOException e) {
+                            System.out.println(e.toString());
+                        }
+                    }
+
+
+                    // tenta criar o processo
+                    try {
+
+                        // cria uma instância de processo
+                        Process p = new ProcessBuilder("sh", "src/sh/config.sh").start();
+                        p.waitFor();
+                    } 
+                    
+                    // caso de alguma das duas exceptions
+                    catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             }
 
@@ -67,16 +107,13 @@ public class index {
                 if (Argumento.endsWith(ExtensaoValida)) Caminho = Argumento;
             }
 
-            // logs informativos ("provisório");
-            System.out.println("O caminho do arquivo: ");
-            System.out.println(Caminho);
-
-            // instância que vai armazenar o arquivo que será lido
-            Arquivo ArquivoLido = new Arquivo(Caminho);
-
-            // tenta efetuar a leitura do arquivo
-            ArquivoLido.Ler();
             
         }
+
+        // instância que vai armazenar o arquivo que será lido
+        Arquivo ArquivoLido = new Arquivo(Caminho);
+
+        // tenta efetuar a leitura do arquivo
+        ArquivoLido.Ler();
     }
 }
