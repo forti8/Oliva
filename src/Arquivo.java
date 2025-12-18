@@ -1,6 +1,9 @@
 // importando  os pacotes necessarios para a leitura do arquivo
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
@@ -39,6 +42,65 @@ public class Arquivo {
                     System.out.println(Linha);
                 }
         
+                // fecha o arquivo
+                BR.close();
+            }
+    
+            // caso de uma exception
+            catch (IOException e) {
+                System.out.println(e.toString());
+                return 1;
+            }
+        }
+
+        // exception do arquivo não encrontrado
+        catch (FileNotFoundException e) {
+            System.out.println("File not found exception");
+            return 1;
+        }
+        
+        // IOException
+        catch (IOException e) {
+            System.out.println(e.toString());
+            return 1;
+        }
+
+        // retorna 0 para sucesso
+        // e retorna 1 para falha
+        return 0;
+    }
+
+    // copiar a instância para o conteudo de outro arquivo
+    public int CopiarPara (String Destino) {
+
+        // define uma instância para um file reader
+        // tenta o file reader
+        try (FileReader FR = new FileReader(this.caminho)) {
+
+            // define uma instância para um buffer reader
+            BufferedReader BR = new BufferedReader(FR);
+    
+            // tenta o buffer read
+            try (BR) {
+    
+                // armazena a linha atual
+                String Linha;
+
+                // tenta escrever usando o bufferedWritter
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(Destino))) {
+    
+                    // enquanto a linha não é nula
+                    while ((Linha = BR.readLine()) != null) {
+                        bw.write(Linha);
+                        bw.newLine();
+                    }
+                } 
+                
+                // caso de uma exception
+                catch (IOException e) {
+                    System.out.println("Error writing file.");
+                }
+
                 // fecha o arquivo
                 BR.close();
             }
