@@ -1,6 +1,26 @@
 // classe index
 public class index {
 
+    // para interpretar um numero como boolean
+    public static boolean bool(int numero, boolean not) {
+
+        // variavel que vai armazenar o retorno
+        boolean retorno = true;
+
+        // se for um numero igual de zero é false
+        if (numero == 0) {
+
+            // caso seja zero significa que é falso
+            retorno = false;
+        }
+        
+        // se precisa inverter o retorno
+        if (not) return !retorno;
+
+        // caso não precise
+        return retorno;
+    }
+
     // metodo main reponsável pela inicialização do sistema no java
     public static void main(String[] args) {
 
@@ -24,7 +44,7 @@ public class index {
             if (Argumento.startsWith(PrefixoDeInformacao)) {
                 
                 // remove o prefixo e transforma o texto em lowercase
-                Argumento = Argumento.replace(PrefixoDeInformacao, "");
+                Argumento = Argumento.replaceFirst(PrefixoDeInformacao, "");
                 Argumento.toLowerCase();
             }
 
@@ -32,8 +52,11 @@ public class index {
             else if (Argumento.startsWith(PrefixoDeExecucao)) {
 
                 // remove o prefixo
-                Argumento = Argumento.replace(PrefixoDeExecucao, "");
+                Argumento = Argumento.replaceFirst(PrefixoDeExecucao, "");
                 Argumento.toLowerCase();
+
+                if (bool(Argumento.compareTo("config-file"), true)) {
+                }
             }
 
             // sem nenhum prefixo caminho do arquivo
