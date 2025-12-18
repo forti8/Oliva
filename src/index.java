@@ -5,34 +5,55 @@ public class index {
     public static void main(String[] args) {
 
         // prefixo de argumento de execução
-        String PrefixoDeExecucao = "-";
-
+        final String PrefixoDeExecucao = "-";
+        
         // prefixo de argumento de informação
-        String PrefixoDeInformacao = "--";
+        final String PrefixoDeInformacao = "--";
+        
+        // extensão valida para arquivo OliLang
+        final String ExtensaoValida = ".ol";
+        
+        // caminho do arquivo executado, por padrão index.ExtensãoVálida
+        String Caminho = "index" + ExtensaoValida;
 
         // para cada argumento contido em args
         for (String Argumento : args) {
-
-            // transforma todo argumento em lowercase
-            Argumento.toLowerCase();
             
             // verifica o prefixo
             // prefixo de informação : help, version ...
             if (Argumento.startsWith(PrefixoDeInformacao)) {
-                System.out.println("prefixo de inf");
+                
+                // remove o prefixo e transforma o texto em lowercase
+                Argumento = Argumento.replace(PrefixoDeInformacao, "");
+                Argumento.toLowerCase();
             }
 
             // prefixo de execucao : configurações
             else if (Argumento.startsWith(PrefixoDeExecucao)) {
-                System.out.println("prefixo de exec");
+
+                // remove o prefixo
+                Argumento = Argumento.replace(PrefixoDeExecucao, "");
+                Argumento.toLowerCase();
             }
 
             // sem nenhum prefixo caminho do arquivo
             else {
-                System.out.println("caminho");
+
+                // o caminho nada mais é que o argumento
+                // se o arquivo for de uma extensão valida
+                if (Argumento.endsWith(ExtensaoValida)) Caminho = Argumento;
             }
 
-            System.out.println(Argumento);
+            // logs informativos ("provisório");
+            System.out.println("O caminho do arquivo: ");
+            System.out.println(Caminho);
+
+            // instância que vai armazenar o arquivo que será lido
+            Arquivo ArquivoLido = new Arquivo(Caminho);
+
+            // tenta efetuar a leitura do arquivo
+            ArquivoLido.Ler();
+            
         }
     }
 }
