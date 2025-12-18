@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 // classe de um separador
 public class Separador {
 
@@ -8,9 +11,9 @@ public class Separador {
     public static Token[] Separar () {
 
         // array que vai ser retornado
-        Token[] ArrayDeRetorno = new Token[1];
+        List<Token> lista = new ArrayList<>();
 
         // retorna como esperado
-        return ArrayDeRetorno;
+        return lista.toArray(new Token[0]);
     }
 }
