@@ -12,9 +12,10 @@ public class index {
         // variavel que vai armazenar o retorno
         boolean retorno = true;
 
+        
         // se for um numero igual de zero é false
         if (numero == 0) {
-
+            
             // caso seja zero significa que é falso
             retorno = false;
         }
@@ -28,6 +29,9 @@ public class index {
 
     // metodo main reponsável pela inicialização do sistema no java
     public static void main(String[] args) {
+        
+        // variavel que vai expor caso já tenha sido usado um comando
+        boolean comandoUsado = false;
 
         // prefixo de argumento de execução
         final String PrefixoDeExecucao = "-";
@@ -51,6 +55,8 @@ public class index {
                 // remove o prefixo e transforma o texto em lowercase
                 Argumento = Argumento.replaceFirst(PrefixoDeInformacao, "");
                 Argumento.toLowerCase();
+
+                comandoUsado = true;
             }
 
             // prefixo de execucao : configurações
@@ -96,7 +102,11 @@ public class index {
                         e.printStackTrace();
                     }
 
+                    Arquivo ArquivoDeConfig = new Arquivo("./src/models/config.txt");
+                    ArquivoDeConfig.CopiarPara("./configs/.config.ol");
                 }
+
+                comandoUsado = true;
             }
 
             // sem nenhum prefixo caminho do arquivo
@@ -114,6 +124,6 @@ public class index {
         Arquivo ArquivoLido = new Arquivo(Caminho);
 
         // tenta efetuar a leitura do arquivo
-        ArquivoLido.Ler();
+        if(!comandoUsado) ArquivoLido.Ler();
     }
 }
