@@ -1,38 +1,154 @@
+import java.io.File;
+import java.io.IOException;
+import java.lang.ProcessBuilder;
+import java.lang.InterruptedException;
+
 // classe index
 public class index {
 
+    // para interpretar um numero como boolean
+    public static boolean bool(int numero, boolean not) {
+
+        // variavel que vai armazenar o retorno
+        boolean retorno = true;
+
+        
+        // se for um numero igual de zero é false
+        if (numero == 0) {
+            
+            // caso seja zero significa que é falso
+            retorno = false;
+        }
+        
+        // se precisa inverter o retorno
+        if (not) return !retorno;
+
+        // caso não precise
+        return retorno;
+    }
+
     // metodo main reponsável pela inicialização do sistema no java
     public static void main(String[] args) {
+        
+        // variavel que vai expor caso já tenha sido usado um comando
+        boolean comandoUsado = false;
 
         // prefixo de argumento de execução
-        String PrefixoDeExecucao = "-";
-
+        final String PrefixoDeExecucao = "-";
+        
         // prefixo de argumento de informação
-        String PrefixoDeInformacao = "--";
+        final String PrefixoDeInformacao = "--";
+        
+        // extensão valida para arquivo OliLang
+        final String ExtensaoValida = ".ol";
+        
+        // caminho do arquivo executado, por padrão index.ExtensãoVálida
+        String Caminho = "index" + ExtensaoValida;
+
+        // variavel temporaria
+        if (true) {
+            
+            // tenta verificar o arquivo de configuração da linguagem
+            File ArquivoDeConfig = new File("./configs/.config.ol");
+
+            // se o arquivo de configuração existe
+            if (ArquivoDeConfig.exists()) {
+    
+                // instancia usando a classe oli Arquivo
+                Arquivo a = new Arquivo("./configs/.config.ol");
+    
+                // linha que contem conteudo (-1 caso não exista)
+                int IndexDaLinha = a.ProcurarPor("INDEX");
+    
+                // resgata o conteudo da linha
+                String ConteudoDaLinha = a.LerLinha(IndexDaLinha);
+
+                // remove espaços
+                ConteudoDaLinha = ConteudoDaLinha.replaceAll(" ", "");
+
+                // sem os espaços sobre INDEX={caminho}
+                ConteudoDaLinha = ConteudoDaLinha.replaceFirst("INDEX=", "");
+                Caminho = ConteudoDaLinha;
+            }
+        }
 
         // para cada argumento contido em args
         for (String Argumento : args) {
-
-            // transforma todo argumento em lowercase
-            Argumento.toLowerCase();
             
             // verifica o prefixo
             // prefixo de informação : help, version ...
             if (Argumento.startsWith(PrefixoDeInformacao)) {
-                System.out.println("prefixo de inf");
+                
+                // remove o prefixo e transforma o texto em lowercase
+                Argumento = Argumento.replaceFirst(PrefixoDeInformacao, "");
+                Argumento.toLowerCase();
+
+                comandoUsado = true;
             }
 
             // prefixo de execucao : configurações
             else if (Argumento.startsWith(PrefixoDeExecucao)) {
-                System.out.println("prefixo de exec");
+
+                // remove o prefixo
+                Argumento = Argumento.replaceFirst(PrefixoDeExecucao, "");
+                Argumento.toLowerCase();
+
+                // -config-file
+                if (bool(Argumento.compareTo("config-file"), true)) {
+
+                    // novo arquivo de configuração .config.ol
+                    File NovoArquivoDeConfig  = new File(".config.ol");
+                    
+                    // verifica se o arquivo existe
+                    if (!(NovoArquivoDeConfig.exists())) {
+
+                        // se não existir tenta criar
+                        try {
+
+                            // cria o arquivo
+                            NovoArquivoDeConfig.createNewFile();
+                        }
+                        
+                        // caso de uma exception
+                        catch (IOException e) {
+                            System.out.println(e.toString());
+                        }
+                    }
+
+
+                    // tenta criar o processo
+                    try {
+
+                        // cria uma instância de processo
+                        Process p = new ProcessBuilder("sh", "src/sh/config.sh").start();
+                        p.waitFor();
+                    } 
+                    
+                    // caso de alguma das duas exceptions
+                    catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    Arquivo ArquivoDeConfig = new Arquivo("./src/models/config.txt");
+                    ArquivoDeConfig.CopiarPara("./configs/.config.ol");
+                }
+
+                comandoUsado = true;
             }
 
             // sem nenhum prefixo caminho do arquivo
             else {
-                System.out.println("caminho");
-            }
 
-            System.out.println(Argumento);
+                // o caminho nada mais é que o argumento
+                // se o arquivo for de uma extensão valida
+                if (Argumento.endsWith(ExtensaoValida)) Caminho = Argumento;
+            }
         }
+
+        // instância que vai armazenar o arquivo que será lido
+        Arquivo ArquivoLido = new Arquivo(Caminho);
+        
+        // tenta efetuar a leitura do arquivo
+        if(!comandoUsado) ArquivoLido.Ler();
     }
 }

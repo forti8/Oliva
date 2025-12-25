@@ -5,10 +5,19 @@ public class Token {
     private String Conteudo;
     private int Tipo;
 
-    // construtor
-    public Token (String Conteudo, int Tipo) {
-        super();
+    // setar todo o token
+    public void setConteudo (String Conteudo) {
         this.Conteudo = Conteudo;
-        this.Tipo = Tipo;
     } 
+    public void setTipo (int Tipo) {
+        this.Tipo = Tipo;
+    }
+
+    // resgatar todo o token
+    public String getConteudo () {
+        return this.Conteudo;
+    }
+    public int getTipo () {
+        return this.Tipo;
+    }
 }

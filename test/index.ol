@@ -1,0 +1,2 @@
+console.out()
+console.in()
