@@ -73,4 +73,9 @@ public class Separador {
     public int tamanhoLista () {
         return this.lista.size();
     } 
+
+    // geter
+    public List<Token> getLista () {
+        return this.lista;
+    }
 }
