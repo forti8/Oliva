@@ -1,23 +1,64 @@
 // define a classe de um token para ser usado no separador
 public class Token {
 
+    // tipagem
+    public static enum EnumTipo {
+        CHAR,
+        INT, 
+        STR,
+        BOOL, 
+        FLOAT,
+        PALAVRA,
+        PALAVRA_RESERVADA,
+        ABRE_PAR,
+        FECHA_PAR,
+        ABRE_CHAVES,
+        FECHA_CHAVES,
+        ABRE_COLC,
+        FECHA_COLC,
+        PONTO,
+        VIRGULA,
+        INTERROGACAO,
+        DOIS_PONTOS,
+        IGUAL,
+        MAIS,
+        MENOS, 
+        DIVISAO,
+        MULTI,
+        E,
+        PIPE,
+        OU,
+        NAO,
+        MAIOR,
+        MAIOR_IGUAL,
+        MENOR,
+        MENOR_IGUAL,
+        DIFERENTE, 
+        IGUAL_COMPARACAO,
+        CIRCUNFLEXO,
+        EXPOENTE,
+        ASPAS_DUPLAS,
+        ASPAS_SIMPLES,
+        CONTRA_BARRA
+    }
+
     // atributos do token
     private String Conteudo;
-    private int Tipo;
+    private EnumTipo Tipo;
 
-    // setar todo o token
-    public void setConteudo (String Conteudo) {
-        this.Conteudo = Conteudo;
-    } 
-    public void setTipo (int Tipo) {
-        this.Tipo = Tipo;
+    // seters
+    public void setConteudo (String c) {
+        this.Conteudo = c;
+    }
+    public void setTipo (EnumTipo t) {
+        this.Tipo = t;
     }
 
     // resgatar todo o token
     public String getConteudo () {
         return this.Conteudo;
     }
-    public int getTipo () {
+    public EnumTipo getTipo () {
         return this.Tipo;
     }
 }
