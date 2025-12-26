@@ -6,27 +6,6 @@ import java.lang.InterruptedException;
 // classe index
 public class index {
 
-    // para interpretar um numero como boolean
-    public static boolean bool(int numero, boolean not) {
-
-        // variavel que vai armazenar o retorno
-        boolean retorno = true;
-
-        
-        // se for um numero igual de zero é false
-        if (numero == 0) {
-            
-            // caso seja zero significa que é falso
-            retorno = false;
-        }
-        
-        // se precisa inverter o retorno
-        if (not) return !retorno;
-
-        // caso não precise
-        return retorno;
-    }
-
     // metodo main reponsável pela inicialização do sistema no java
     public static void main(String[] args) {
         
@@ -94,7 +73,7 @@ public class index {
                 Argumento.toLowerCase();
 
                 // -config-file
-                if (bool(Argumento.compareTo("config-file"), true)) {
+                if (Argumento.equals("config-file")) {
 
                     // novo arquivo de configuração .config.ol
                     File NovoArquivoDeConfig  = new File(".config.ol");
