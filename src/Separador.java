@@ -14,6 +14,46 @@ public class Separador {
         this.LinhaSeparada = LinhaSeparada;
     }
 
+    // apenas vê se uma palavra é reservada
+    // vendo pelo o array
+    public static boolean palavraReservada (String palavra) {
+
+        final String[] PalavrasReservadas = {
+            "int",
+            "str",
+            "char",
+            "bool",
+            "float",
+            "if",
+            "else",
+            "elif",
+            "return",
+            "continue",
+            "for",
+            "while",
+            "do",
+            "fun",
+            "imp",
+            "try",
+            "catch",
+            "imut",
+            "var",
+            "true",
+            "false",
+            "null",
+            "new",
+            "del"
+        };
+
+        for (String p : PalavrasReservadas) {
+            if (palavra.equals(p)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // função para separar
     public void Separar () {
 
@@ -26,42 +66,369 @@ public class Separador {
         // para percorrer a string
         while (c < Tamanho) {
 
-            // token atual
-            Token TA = new Token();
+            // variaveis base
             char caracter = this.LinhaSeparada.charAt(c);
-            boolean b;
 
             // se for uma letra
-            if ((b = Character.isLetter(caracter)) || caracter == '_') {
+            if (Character.isLetter(caracter) || caracter == '_') {
 
-                // inicia uma palavra 
-                String palavra = "" + caracter;
-
-                // pega o próximo caracter
-                char proximoCaracter = this.LinhaSeparada.charAt(++c);
+                // string builder
+                StringBuilder SB = new StringBuilder();
 
                 // enquanto for uma letra ou digito     ou      for o caracter '_'
-                while ((b = Character.isLetterOrDigit(proximoCaracter)) || proximoCaracter == '_') {
+                while ( c < Tamanho && (Character.isLetterOrDigit(this.LinhaSeparada.charAt(c)) || this.LinhaSeparada.charAt(c) == '_')) {
                      
                     // adiciona o próximo caracter a string 
-                    palavra += proximoCaracter;
-
-                    // define o próximo caracter
-                    proximoCaracter = this.LinhaSeparada.charAt(++c);
+                    SB.append(this.LinhaSeparada.charAt(c++));
                 }
 
-                // log (temporário)
-                System.out.println(palavra);
+                // palavra armazenada
+                String palavra = SB.toString();
+                // verifica se é uma palavra reservada
+                if (palavraReservada(palavra)) {
+                    
+                    // adiciona o token
+                    Token  T = new Token();
+                    T.setConteudo(palavra);
+                    T.setTipo(Token.EnumTipo.PALAVRA_RESERVADA);
+                    lista.add(T);
+
+                    // pula o código para a próxima execução
+                    continue;
+                }
+
+                // adiciona o token
+                Token  T = new Token();
+                T.setConteudo(palavra);
+                T.setTipo(Token.EnumTipo.PALAVRA);
+                lista.add(T);
 
                 // pula o código para a próxima execução
                 continue;
             }
 
-            else {
+            else if (Character.isDigit(caracter)) {
 
-                // log (temporário)
-                System.out.println(caracter);
+                // contem ponto
+                boolean FLOAT = false;
+
+                // string builder
+                StringBuilder SB = new StringBuilder();
+
+                // enquanto for uma letra ou digito     ou      for o caracter '.'
+                while ( c < Tamanho && (Character.isDigit(this.LinhaSeparada.charAt(c)) || (this.LinhaSeparada.charAt(c) == '.' && !FLOAT))) {
+                     
+                    // define como ponto flutuante
+                    if (this.LinhaSeparada.charAt(c) == '.') FLOAT = true;
+
+                    // adiciona o próximo caracter a string 
+                    SB.append(this.LinhaSeparada.charAt(c++));
+
+                }
+
+                // num armazenado
+                String numero = SB.toString();
+
+                // é um numero com ponto
+                if (FLOAT) {
+                    Token  T = new Token();
+                    T.setConteudo(numero);
+                    T.setTipo(Token.EnumTipo.FLOAT);
+                    lista.add(T);
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo(numero);
+                T.setTipo(Token.EnumTipo.INT);
+                lista.add(T);
+                continue;
             }
+
+            
+            // operadores
+            // ======================================
+            // ======================================
+            if (caracter == '=') {
+
+                if (this.LinhaSeparada.charAt(c+1) == '=') {
+                    Token  T = new Token();
+                    T.setConteudo("" + caracter);
+                    T.setTipo(Token.EnumTipo.IGUAL_COMPARACAO);
+                    lista.add(T);
+                    c+=2;
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.IGUAL);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '+') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.MAIS);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '-') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.MENOS);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '/') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.DIVISAO);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '*') {
+
+                if (this.LinhaSeparada.charAt(c+1) == '*') {
+                    Token  T = new Token();
+                    T.setConteudo("" + caracter);
+                    T.setTipo(Token.EnumTipo.EXPOENTE);
+                    lista.add(T);
+                    c+=2;
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.MULTI);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '&') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.E);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '|') {
+            
+                if (this.LinhaSeparada.charAt(c+1) == '|') {
+                    Token  T = new Token();
+                    T.setConteudo("" + caracter);
+                    T.setTipo(Token.EnumTipo.OU);
+                    lista.add(T);
+                    c+=2;
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.PIPE);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '>') {
+
+                if (this.LinhaSeparada.charAt(c+1) == '=') {
+                    Token  T = new Token();
+                    T.setConteudo("" + caracter);
+                    T.setTipo(Token.EnumTipo.MAIOR_IGUAL);
+                    lista.add(T);
+                    c+=2;
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.MAIOR);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '<') {
+
+                if (this.LinhaSeparada.charAt(c+1) == '=') {
+                    Token  T = new Token();
+                    T.setConteudo("" + caracter);
+                    T.setTipo(Token.EnumTipo.MENOR_IGUAL);
+                    lista.add(T);
+                    c+=2;
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.MENOR);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '^') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.CIRCUNFLEXO);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '"') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.ASPAS_DUPLAS);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '\'') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.ASPAS_SIMPLES);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '\\') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.CONTRA_BARRA);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '.') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.PONTO);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == ',') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.VIRGULA);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '(') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.ABRE_PAR);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == ')') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.FECHA_PAR);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '{') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.ABRE_CHAVES);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '}') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.FECHA_CHAVES);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '[') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.ABRE_COLC);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == ']') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.FECHA_COLC);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '?') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.INTERROGACAO);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == ':') {
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.DOIS_PONTOS);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            else if (caracter == '!') {
+
+                if (this.LinhaSeparada.charAt(c+1) == '=') {
+                    Token  T = new Token();
+                    T.setConteudo("" + caracter);
+                    T.setTipo(Token.EnumTipo.DIFERENTE);
+                    lista.add(T);
+                    c+=2;
+                    continue;
+                }
+
+                Token  T = new Token();
+                T.setConteudo("" + caracter);
+                T.setTipo(Token.EnumTipo.NAO);
+                lista.add(T);
+                c++;
+                continue;
+            }
+
+            // ======================================
+            // ======================================
+            // operadores
+
 
             // pula para o proximo caracter
             c++;
