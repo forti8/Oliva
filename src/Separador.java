@@ -42,7 +42,9 @@ public class Separador {
             "false",
             "null",
             "new",
-            "del"
+            "del",
+            "void",
+            "class"
         };
 
         for (String p : PalavrasReservadas) {
@@ -69,8 +71,14 @@ public class Separador {
             // variaveis base
             char caracter = this.LinhaSeparada.charAt(c);
 
+            // pula algum espaço
+            if (Character.isSpaceChar(caracter)) {
+                c++;
+                continue;
+            }
+
             // se for uma letra
-            if (Character.isLetter(caracter) || caracter == '_') {
+            else if (Character.isLetter(caracter) || caracter == '_') {
 
                 // string builder
                 StringBuilder SB = new StringBuilder();

@@ -1,2 +1,1 @@
-console.out()
-console.in()
+10000.000

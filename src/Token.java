@@ -5,6 +5,7 @@ public class Token {
     public static enum EnumTipo {
         CHAR,
         INT, 
+        VOID,
         STR,
         BOOL, 
         FLOAT,
