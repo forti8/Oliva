@@ -1,46 +1,59 @@
 package compiler.commands;
-import compiler.command.Command;
+import compiler.libs.memo.Memory;
 
-public class Variable extends Command {
+public class Variable {
 
-    private String variableName;
-    private String variableValue;
-    private long memoryLocation;
-    
-    public Variable (FunctionEnum function, String name, String value) {
-        super();
-        this.function = function;
-        this.variableName = name;
-        this.variableValue = value;
+    public enum varType {
+        INT, FLOAT, BOOL, CHAR
     }
-    
-    public void execute () {
-        switch (this.function) {
-            case CALL: call();
+
+    public String variableName;
+    public varType variableType;
+    private long memoryLocation;
+   
+    public void call () {
+
+        return;
+    } 
+
+    public void define (Object value) {
+        switch (this.variableType) {
+            case INT:
+                this.memoryLocation = Memory.Alloc(4);
+                Memory.WriteInt(this.memoryLocation, (int) value);
             break;
-            case DEFINE: define();
+
+            case FLOAT:
+                this.memoryLocation = Memory.Alloc(4);
+                Memory.WriteFloat(this.memoryLocation, (float) value);
             break;
-            case PUT: put();
+
+            case CHAR:
+                this.memoryLocation = Memory.Alloc(1);
+                Memory.WriteChar(this.memoryLocation, (char) value);
             break;
-            case DELETE: delete();
+
+            case BOOL:
+                this.memoryLocation = Memory.Alloc(1);
+                Memory.WriteBool(this.memoryLocation, (boolean) value);
             break;
 
             default:
-                System.out.println("unrecognized function");
-            break;
         }
+
+        
+        return;
     }
 
-    private void call () {
-        return;
-    } 
-    private void define () {
+    public void put () {
         return;
     }
-    private void put () {
+
+    public void delete () {
         return;
     }
-    private void delete () {
-        return;
+
+    public long getMemoryLocation () {
+        return this.memoryLocation;
     }
 }
