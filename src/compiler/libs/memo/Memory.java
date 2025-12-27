@@ -1,4 +1,4 @@
-package compilador.libs.memo;
+package compiler.libs.memo;
 
 public class Memory {
     static {
