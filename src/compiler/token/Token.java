@@ -46,8 +46,8 @@ public class Token {
     }
 
     // token attributes
-    private String content;
-    private TokenType type;
+    public String content;
+    public TokenType type;
 
     // setters
     public void setContent (String c) {
