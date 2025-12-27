@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import utils.tokenizer.Tokenizer;
+import compiler.interpreter.Interpreter;
 
 // file handler class
 public class FileHandler {
@@ -40,6 +41,8 @@ public class FileHandler {
                     // starts parsing
                     Tokenizer lineTokenizer = new Tokenizer(line);
                     lineTokenizer.tokenize();
+                    Interpreter lineInterpreter = new Interpreter(lineTokenizer.getList());
+                    lineInterpreter.activate();
                 }
         
                 br.close();

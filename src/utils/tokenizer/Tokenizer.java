@@ -23,7 +23,8 @@ public class Tokenizer {
             "int", "str", "char", "bool", "float", "if", "else", "elif",
             "return", "continue", "for", "while", "do", "fun", "imp",
             "try", "catch", "imut", "var", "true", "false", "null",
-            "new", "del", "void", "exp", "class"
+            "new", "del", "void", "exp", "class", "print", "default", "case", "switch",
+            "break"
         };
 
         for (String p : reservedWords) {
