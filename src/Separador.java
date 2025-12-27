@@ -44,6 +44,7 @@ public class Separador {
             "new",
             "del",
             "void",
+            "exp",
             "class"
         };
 
