@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.lang.ProcessBuilder;
 import java.lang.InterruptedException;
 
+import utils.arquivo.Arquivo;
+
 // classe index
 public class index {
 
@@ -53,7 +55,7 @@ public class index {
 
         // para cada argumento contido em args
         for (String Argumento : args) {
-            
+
             // verifica o prefixo
             // prefixo de informação : help, version ...
             if (Argumento.startsWith(PrefixoDeInformacao)) {
