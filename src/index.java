@@ -3,152 +3,128 @@ import java.io.IOException;
 import java.lang.ProcessBuilder;
 import java.lang.InterruptedException;
 
-// classe index
+import utils.file.FileHandler;
+
+// index class
 public class index {
 
-    // para interpretar um numero como boolean
-    public static boolean bool(int numero, boolean not) {
-
-        // variavel que vai armazenar o retorno
-        boolean retorno = true;
-
-        
-        // se for um numero igual de zero é false
-        if (numero == 0) {
-            
-            // caso seja zero significa que é falso
-            retorno = false;
-        }
-        
-        // se precisa inverter o retorno
-        if (not) return !retorno;
-
-        // caso não precise
-        return retorno;
-    }
-
-    // metodo main reponsável pela inicialização do sistema no java
+    // main method responsible for system initialization in Java
     public static void main(String[] args) {
         
-        // variavel que vai expor caso já tenha sido usado um comando
-        boolean comandoUsado = false;
+        // variable to track if a command has already been used
+        boolean commandUsed = false;
 
-        // prefixo de argumento de execução
-        final String PrefixoDeExecucao = "-";
+        // execution argument prefix
+        final String executionPrefix = "-";
         
-        // prefixo de argumento de informação
-        final String PrefixoDeInformacao = "--";
+        // information argument prefix
+        final String infoPrefix = "--";
         
-        // extensão valida para arquivo OliLang
-        final String ExtensaoValida = ".ol";
+        // valid extension for OliLang files
+        final String validExtension = ".ol";
         
-        // caminho do arquivo executado, por padrão index.ExtensãoVálida
-        String Caminho = "index" + ExtensaoValida;
+        // path of the executed file, defaults to index.validExtension
+        String path = "index" + validExtension;
 
-        // variavel temporaria
+        // temporary scope/variable block
         if (true) {
             
-            // tenta verificar o arquivo de configuração da linguagem
-            File ArquivoDeConfig = new File("./configs/.config.ol");
+            // tries to verify the language configuration file
+            File configFile = new File("./configs/.config.ol");
 
-            // se o arquivo de configuração existe
-            if (ArquivoDeConfig.exists()) {
+            // if the configuration file exists
+            if (configFile.exists()) {
     
-                // instancia usando a classe oli Arquivo
-                Arquivo a = new Arquivo("./configs/.config.ol");
+                // instance using the custom FileHandler class
+                FileHandler handler = new FileHandler("./configs/.config.ol");
     
-                // linha que contem conteudo (-1 caso não exista)
-                int IndexDaLinha = a.ProcurarPor("INDEX");
+                // line containing the content (-1 if it doesn't exist)
+                int lineIndex = handler.searchFor("INDEX");
     
-                // resgata o conteudo da linha
-                String ConteudoDaLinha = a.LerLinha(IndexDaLinha);
+                // retrieves the line content
+                String lineContent = handler.readLine(lineIndex);
 
-                // remove espaços
-                ConteudoDaLinha = ConteudoDaLinha.replaceAll(" ", "");
+                // remove spaces
+                lineContent = lineContent.replaceAll(" ", "");
 
-                // sem os espaços sobre INDEX={caminho}
-                ConteudoDaLinha = ConteudoDaLinha.replaceFirst("INDEX=", "");
-                Caminho = ConteudoDaLinha;
+                // removes "INDEX=" to leave only the {path}
+                lineContent = lineContent.replaceFirst("INDEX=", "");
+                path = lineContent;
             }
         }
 
-        // para cada argumento contido em args
-        for (String Argumento : args) {
-            
-            // verifica o prefixo
-            // prefixo de informação : help, version ...
-            if (Argumento.startsWith(PrefixoDeInformacao)) {
-                
-                // remove o prefixo e transforma o texto em lowercase
-                Argumento = Argumento.replaceFirst(PrefixoDeInformacao, "");
-                Argumento.toLowerCase();
+        // for each argument contained in args
+        for (String argument : args) {
 
-                comandoUsado = true;
+            // checks the prefix
+            // info prefix: help, version ...
+            if (argument.startsWith(infoPrefix)) {
+                
+                // removes the prefix and transforms text to lowercase
+                argument = argument.replaceFirst(infoPrefix, "");
+                argument.toLowerCase();
+
+                commandUsed = true;
             }
 
-            // prefixo de execucao : configurações
-            else if (Argumento.startsWith(PrefixoDeExecucao)) {
+            // execution prefix: configurations
+            else if (argument.startsWith(executionPrefix)) {
 
-                // remove o prefixo
-                Argumento = Argumento.replaceFirst(PrefixoDeExecucao, "");
-                Argumento.toLowerCase();
+                // removes the prefix
+                argument = argument.replaceFirst(executionPrefix, "");
+                argument.toLowerCase();
 
-                // -config-file
-                if (bool(Argumento.compareTo("config-file"), true)) {
+                // -config-file command
+                if (argument.equals("config-file")) {
 
-                    // novo arquivo de configuração .config.ol
-                    File NovoArquivoDeConfig  = new File(".config.ol");
+                    // new configuration file .config.ol
+                    File newConfigFile = new File(".config.ol");
                     
-                    // verifica se o arquivo existe
-                    if (!(NovoArquivoDeConfig.exists())) {
+                    // checks if the file exists
+                    if (!(newConfigFile.exists())) {
 
-                        // se não existir tenta criar
+                        // if it doesn't exist, try to create it
                         try {
-
-                            // cria o arquivo
-                            NovoArquivoDeConfig.createNewFile();
+                            newConfigFile.createNewFile();
                         }
                         
-                        // caso de uma exception
+                        // catch IO exception
                         catch (IOException e) {
                             System.out.println(e.toString());
                         }
                     }
 
-
-                    // tenta criar o processo
+                    // tries to create the process
                     try {
-
-                        // cria uma instância de processo
+                        // creates a process instance
                         Process p = new ProcessBuilder("sh", "src/sh/config.sh").start();
                         p.waitFor();
                     } 
                     
-                    // caso de alguma das duas exceptions
+                    // catch process-related exceptions
                     catch (IOException | InterruptedException e) {
                         e.printStackTrace();
                     }
 
-                    Arquivo ArquivoDeConfig = new Arquivo("./src/models/config.txt");
-                    ArquivoDeConfig.CopiarPara("./configs/.config.ol");
+                    FileHandler configTemplate = new FileHandler("./src/models/config.txt");
+                    configTemplate.copyTo("./configs/.config.ol");
                 }
 
-                comandoUsado = true;
+                commandUsed = true;
             }
 
-            // sem nenhum prefixo caminho do arquivo
+            // no prefix: treat as file path
             else {
 
-                // o caminho nada mais é que o argumento
-                // se o arquivo for de uma extensão valida
-                if (Argumento.endsWith(ExtensaoValida)) Caminho = Argumento;
+                // if the file has a valid extension, set it as the path
+                if (argument.endsWith(validExtension)) path = argument;
             }
         }
 
-        // instância que vai armazenar o arquivo que será lido
-        Arquivo ArquivoLido = new Arquivo(Caminho);
+        // instance that stores the file to be read
+        FileHandler fileToRead = new FileHandler(path);
         
-        // tenta efetuar a leitura do arquivo
-        if(!comandoUsado) ArquivoLido.Ler();
+        // attempts to read the file if no specific command was used
+        if(!commandUsed) fileToRead.read();
     }
 }

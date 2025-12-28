@@ -1,4 +1,6 @@
 /bin/
+
 /configs/
 
-.gitignore
+test/
+*.ol

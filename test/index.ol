@@ -1,2 +1,1 @@
-console.out()
-console.in()
+var a:int = 1
