@@ -11,12 +11,15 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import utils.tokenizer.Tokenizer;
 import compiler.interpreter.Interpreter;
+import compiler.runtime.VarTable;
 
 // file handler class
 public class FileHandler {
 
     // private attribute for file path
     private String path;
+    private VarTable varTable = new VarTable();
+
 
     // constructor
     public FileHandler (String path) {
@@ -41,7 +44,7 @@ public class FileHandler {
                     // starts parsing
                     Tokenizer lineTokenizer = new Tokenizer(line);
                     lineTokenizer.tokenize();
-                    Interpreter lineInterpreter = new Interpreter(lineTokenizer.getList());
+                    Interpreter lineInterpreter = new Interpreter(lineTokenizer.getList(), this.varTable);
                     lineInterpreter.activate();
                 }
         
