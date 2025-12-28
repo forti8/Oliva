@@ -42,7 +42,23 @@ public class Token {
         EXPONENT,
         DOUBLE_QUOTE,
         SINGLE_QUOTE,
-        BACKSLASH
+        BACKSLASH,
+
+        SUM_INT,
+        SUM_FLOAT,
+        SUB_INT,
+        SUB_FLOAT,
+        MUL_INT,
+        MUL_FLOAT,
+        DIV_INT,
+        DIV_FLOAT,
+        SQRT_INT,
+        SQRT_FLOAT,
+        CONCAT_STR,
+        OP_INT,
+        OP_FLOAT,
+        OP_STR,
+        OP_WORD
     }
 
     // token attributes
