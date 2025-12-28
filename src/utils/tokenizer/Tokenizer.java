@@ -71,6 +71,15 @@ public class Tokenizer {
                 
                 // check if it's a reserved word
                 if (isReservedWord(word)) {
+
+                    if (word.equals("true") || word.equals("false")) {
+                        Token t = new Token();
+                        t.setContent(word);
+                        t.setType(Token.TokenType.BOOL);
+                        list.add(t);
+                        continue;
+                    }
+
                     Token t = new Token();
                     t.setContent(word);
                     t.setType(Token.TokenType.RESERVED_WORD);
@@ -247,20 +256,58 @@ public class Tokenizer {
             }
 
             else if (character == '"') {
-                Token t = new Token();
-                t.setContent("\"");
-                t.setType(Token.TokenType.DOUBLE_QUOTE);
-                list.add(t);
+
+                int start = c;
                 c++;
+
+                StringBuilder strContent = new StringBuilder();
+
+                while (c < length && this.separatedLine.charAt(c) != '"') {
+                    strContent.append(this.separatedLine.charAt(c));
+                    c++;
+                }
+
+                if (c < length && this.separatedLine.charAt(c) == '"') {
+                    c++;
+                } 
+                
+                else {
+                    throw new RuntimeException("Lexical error: unclosed string literal at position " + start);
+                }
+
+                Token t = new Token();
+                t.setContent(strContent.toString());
+                t.setType(Token.TokenType.STR);
+                list.add(t);
                 continue;
             }
 
             else if (character == '\'') {
+                int start = c;
+                c++; // Skip the opening single quote
+
+                StringBuilder charContent = new StringBuilder();
+                while (c < length && this.separatedLine.charAt(c) != '\'') {
+                    charContent.append(this.separatedLine.charAt(c));
+                    c++;
+                }
+
+                if (c < length && this.separatedLine.charAt(c) == '\'') {
+                    c++;
+                } 
+                
+                else {
+                    throw new RuntimeException("Lexical error: unclosed character literal at position " + start);
+                }
+
+                if (c != (start + 3)) {
+                    throw new RuntimeException("Lexical error: you are trying to assign more/less than one character in position  " + start);
+                }
+
                 Token t = new Token();
-                t.setContent("'");
-                t.setType(Token.TokenType.SINGLE_QUOTE);
+                t.setContent(charContent.toString());
+                t.setType(Token.TokenType.CHAR);
                 list.add(t);
-                c++;
                 continue;
             }
 
