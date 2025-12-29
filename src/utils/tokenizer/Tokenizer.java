@@ -71,6 +71,15 @@ public class Tokenizer {
                 
                 // check if it's a reserved word
                 if (isReservedWord(word)) {
+
+                    if (word.equals("true") || word.equals("false")) {
+                        Token t = new Token();
+                        t.setContent(word);
+                        t.setType(Token.TokenType.BOOL);
+                        list.add(t);
+                        continue;
+                    }
+
                     Token t = new Token();
                     t.setContent(word);
                     t.setType(Token.TokenType.RESERVED_WORD);
@@ -86,30 +95,53 @@ public class Tokenizer {
             }
 
             else if (Character.isDigit(character)) {
-
-                boolean isFloat = false;
                 StringBuilder sb = new StringBuilder();
+                boolean isFloat = false;
 
-                // while it's a digit or a first occurrence of a dot
                 while (c < length && (Character.isDigit(this.separatedLine.charAt(c)) || (this.separatedLine.charAt(c) == '.' && !isFloat))) {
-                     
                     if (this.separatedLine.charAt(c) == '.') isFloat = true;
                     sb.append(this.separatedLine.charAt(c++));
                 }
 
                 String number = sb.toString();
-
-                if (isFloat) {
-                    Token t = new Token();
-                    t.setContent(number);
-                    t.setType(Token.TokenType.FLOAT);
-                    list.add(t);
-                    continue;
-                }
-
                 Token t = new Token();
                 t.setContent(number);
-                t.setType(Token.TokenType.INT);
+
+                if (c < length) {
+                    char nextChar = this.separatedLine.charAt(c);
+                    if (nextChar == '+' || nextChar == '-' || nextChar == '*' || nextChar == '/') {
+                        t.setContent(number + nextChar);
+                        t.setType(isFloat ? Token.TokenType.OP_FLOAT : Token.TokenType.OP_INT);
+                        c++; 
+                    } else {
+                        t.setType(isFloat ? Token.TokenType.FLOAT : Token.TokenType.INT);
+                    }
+                } else {
+                    t.setType(isFloat ? Token.TokenType.FLOAT : Token.TokenType.INT);
+                }
+                list.add(t);
+                continue;
+            }
+
+            else if (character == '"') {
+                c++;
+                StringBuilder sb = new StringBuilder();
+                while (c < length && this.separatedLine.charAt(c) != '"') {
+                    sb.append(this.separatedLine.charAt(c++));
+                }
+                c++;
+
+                Token t = new Token();
+                String content = sb.toString();
+
+                if (c < length && this.separatedLine.charAt(c) == '+') {
+                    t.setContent(content + "+");
+                    t.setType(Token.TokenType.OP_STR);
+                    c++; 
+                } else {
+                    t.setContent(content);
+                    t.setType(Token.TokenType.STR);
+                }
                 list.add(t);
                 continue;
             }
@@ -133,45 +165,38 @@ public class Tokenizer {
                 continue;
             }
 
-            else if (character == '+') {
-                Token t = new Token();
-                t.setContent("+");
-                t.setType(Token.TokenType.PLUS);
-                list.add(t);
-                c++;
-                continue;
-            }
+            else if (character == '+' || character == '-' || character == '*' || character == '/') {
+                Token pT = list.isEmpty() ? null : list.get(list.size() - 1);
+                
+                if (pT != null) {
+                    boolean isInt = pT.type == Token.TokenType.INT;
+                    boolean isFloat = pT.type == Token.TokenType.FLOAT;
+                    boolean isStr = pT.type == Token.TokenType.STR && character == '+';
+                    boolean isWord = pT.type == Token.TokenType.WORD;
 
-            else if (character == '-') {
-                Token t = new Token();
-                t.setContent("-");
-                t.setType(Token.TokenType.MINUS);
-                list.add(t);
-                c++;
-                continue;
-            }
+                    if (isInt || isFloat || isStr || isWord) {
+                        Token.TokenType newType;
+                        if (isStr) newType = Token.TokenType.OP_STR;
+                        else if (isFloat) newType = Token.TokenType.OP_FLOAT;
+                        else if (isWord) newType = Token.TokenType.OP_WORD;
+                        else newType = Token.TokenType.OP_INT;
 
-            else if (character == '/') {
-                Token t = new Token();
-                t.setContent("/");
-                t.setType(Token.TokenType.DIVISION);
-                list.add(t);
-                c++;
-                continue;
-            }
-
-            else if (character == '*') {
-                if (c + 1 < length && this.separatedLine.charAt(c + 1) == '*') {
-                    Token t = new Token();
-                    t.setContent("**");
-                    t.setType(Token.TokenType.EXPONENT);
-                    list.add(t);
-                    c += 2;
-                    continue;
+                        pT.setContent(pT.getContent().concat(String.valueOf(character)));
+                        pT.setType(newType);
+                        
+                        c++;
+                        continue;
+                    }
                 }
+
                 Token t = new Token();
-                t.setContent("*");
-                t.setType(Token.TokenType.MULTIPLY);
+                t.setContent(String.valueOf(character));
+                switch (character) {
+                    case '+': t.setType(Token.TokenType.PLUS); break;
+                    case '-': t.setType(Token.TokenType.MINUS); break;
+                    case '*': t.setType(Token.TokenType.MULTIPLY); break;
+                    case '/': t.setType(Token.TokenType.DIVISION); break;
+                }
                 list.add(t);
                 c++;
                 continue;
@@ -246,21 +271,59 @@ public class Tokenizer {
                 continue;
             }
 
-            else if (character == '"') {
-                Token t = new Token();
-                t.setContent("\"");
-                t.setType(Token.TokenType.DOUBLE_QUOTE);
-                list.add(t);
-                c++;
-                continue;
-            }
+            // else if (character == '"') {
+
+            //     int start = c;
+            //     c++;
+
+            //     StringBuilder strContent = new StringBuilder();
+
+            //     while (c < length && this.separatedLine.charAt(c) != '"') {
+            //         strContent.append(this.separatedLine.charAt(c));
+            //         c++;
+            //     }
+
+            //     if (c < length && this.separatedLine.charAt(c) == '"') {
+            //         c++;
+            //     } 
+                
+            //     else {
+            //         throw new RuntimeException("Lexical error: unclosed string literal at position " + start);
+            //     }
+
+            //     Token t = new Token();
+            //     t.setContent(strContent.toString());
+            //     t.setType(Token.TokenType.STR);
+            //     list.add(t);
+            //     continue;
+            // }
 
             else if (character == '\'') {
+                int start = c;
+                c++; // Skip the opening single quote
+
+                StringBuilder charContent = new StringBuilder();
+                while (c < length && this.separatedLine.charAt(c) != '\'') {
+                    charContent.append(this.separatedLine.charAt(c));
+                    c++;
+                }
+
+                if (c < length && this.separatedLine.charAt(c) == '\'') {
+                    c++;
+                } 
+                
+                else {
+                    throw new RuntimeException("Lexical error: unclosed character literal at position " + start);
+                }
+
+                if (c != (start + 3)) {
+                    throw new RuntimeException("Lexical error: you are trying to assign more/less than one character in position  " + start);
+                }
+
                 Token t = new Token();
-                t.setContent("'");
-                t.setType(Token.TokenType.SINGLE_QUOTE);
+                t.setContent(charContent.toString());
+                t.setType(Token.TokenType.CHAR);
                 list.add(t);
-                c++;
                 continue;
             }
 
