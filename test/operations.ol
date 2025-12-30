@@ -1,3 +1,3 @@
-var<5> numeroInteiro:int = 2147483647
+var<5> numeroInteiro:int = 2_147_483_647
 
 print(numeroInteiro)

@@ -102,12 +102,12 @@ public class Tokenizer {
                 StringBuilder sb = new StringBuilder();
                 boolean isFloat = false;
 
-                while (c < length && (Character.isDigit(this.separatedLine.charAt(c)) || (this.separatedLine.charAt(c) == '.' && !isFloat))) {
+                while (c < length && (Character.isDigit(this.separatedLine.charAt(c)) || (this.separatedLine.charAt(c) == '_') || (this.separatedLine.charAt(c) == '.' && !isFloat))) {
                     if (this.separatedLine.charAt(c) == '.') isFloat = true;
                     sb.append(this.separatedLine.charAt(c++));
                 }
 
-                String number = sb.toString();
+                String number = sb.toString().replaceAll("_", "");
                 Token t = new Token();
                 t.setContent(number);
 
