@@ -61,11 +61,37 @@ public class Interpreter {
             if (currentToken.content.equals("var")) {
                i++;
                Token nameToken = this.getToken(i);
-            
+               int varSize = -1;
+
+               if (nameToken != null && nameToken.type == Token.TokenType.LESS_THAN) {
+                  i++;
+                  Token sizeToken = this.getToken(i);
+
+                  if (sizeToken != null && sizeToken.type == Token.TokenType.INT) {
+
+                     varSize = Integer.parseInt(sizeToken.content);
+                     i++;
+                     Token closeToken = this.getToken(i);
+
+                     if (closeToken != null && closeToken.type == Token.TokenType.GREATER_THAN) {
+                        i++;
+                        nameToken = this.getToken(i);
+                     } 
+
+                     else {
+                        throw new RuntimeException("Error: closing the declaration using '>' of the variable size in bytes is expected");
+                     }
+                  }
+
+                  else {
+                     throw new RuntimeException("Error: it is not possible to declare a variable with a size that is not a positive integer number of bytes");
+                  }
+               }
+
                if (nameToken != null && nameToken.type == Token.TokenType.WORD) {
                   String varName = nameToken.content;
                   i++;
-                  
+               
                   Token colonToken = this.getToken(i);
                   if (colonToken != null && colonToken.type == Token.TokenType.COLON) {
                      i++;
@@ -92,6 +118,7 @@ public class Interpreter {
                               Variable var = new Variable();
                               var.variableName = varName;
                               var.variableType = mapVariableType(varTypeStr);
+                              var.SetMemorySize(varSize);
                               var.define(finalValue);
                               varTable.define(var);
                            }
@@ -101,12 +128,13 @@ public class Interpreter {
                            Variable var = new Variable();
                            var.variableName = varName;
                            var.variableType = mapVariableType(varTypeStr);
+                           var.SetMemorySize(varSize);
                            var.define(null);
                            varTable.define(var);
                         }
                      }
                   } else {
-                     System.out.println("Syntax Error: Expected ':' after variable name.");
+                     throw new RuntimeException("Syntax Error: Expected ':' after variable name.");
                   }
                }
             }
@@ -167,8 +195,13 @@ public class Interpreter {
                Variable v = varTable.call(vI);
                i++;
                
-               Token equalsToken = this.getToken(i);
-               if (equalsToken != null && equalsToken.type == Token.TokenType.EQUALS) {
+               Token nextToken = this.getToken(i);
+               boolean nextNotNull = nextToken != null;
+               boolean nextIsEquals = nextToken.type == Token.TokenType.EQUALS;
+               boolean nextIsIncrement = (nextToken.type == Token.TokenType.AUTO_INCREMENT);
+               boolean nextIsAutoOP = nextIsIncrement || ((nextToken.type == Token.TokenType.AUTO_DECREMENT));
+
+               if (nextNotNull && nextIsEquals) {
                      i++;
                      Token valueToken = this.getToken(i);
                      
@@ -180,11 +213,8 @@ public class Interpreter {
 
                         } else {
                            finalValue = extractLiteral(valueToken);
-                           System.out.println(finalValue);
                            i++; // +
                            Token next = this.getToken(i);
-
-                           System.out.println(next.type);
                            while (next != null && isOpToken(next.type)) {
                                  i++;
                                  Token nextVal = this.getToken(i);
@@ -205,6 +235,36 @@ public class Interpreter {
                         v.put(finalValue);
                         varTable.put(vI, v);
                      }
+               }
+
+               else if (nextIsAutoOP) {
+                  if (nextIsIncrement) {
+                     if (v.variableType == Variable.varType.INT) {
+                        Object novoValorDeVariavel = (((Number) v.call()).intValue()) + 1;
+                        v.put(novoValorDeVariavel);
+                     }   
+                     else if (v.variableType == Variable.varType.FLOAT) {
+                        Object novoValorDeVariavel = (((Number) v.call()).floatValue()) + 1;
+                        v.put(novoValorDeVariavel);
+                     } 
+                     else {
+                        throw new RuntimeException("Error: it was not possible to perform an auto-increment operation because the type does not correspond to the desired one");
+                     }
+                  }
+
+                  else {
+                     if (v.variableType == Variable.varType.INT) {
+                        Object novoValorDeVariavel = (((Number) v.call()).intValue()) - 1;
+                        v.put(novoValorDeVariavel);
+                     }   
+                     else if (v.variableType == Variable.varType.FLOAT) {
+                        Object novoValorDeVariavel = (((Number) v.call()).floatValue()) - 1;
+                        v.put(novoValorDeVariavel);
+                     } 
+                     else {
+                        throw new RuntimeException("Error: it was not possible to perform an auto-decrement operation because the type does not correspond to the desired one");
+                     }
+                  }
                }
             }
          }
@@ -245,6 +305,8 @@ public class Interpreter {
       String valAStr = content.substring(0, content.length() - 1);
       
       Object valA;
+      boolean variableAndFloat = false;
+      boolean opFloat = false;
       if (opToken.type == Token.TokenType.OP_FLOAT) {
          valA = Float.parseFloat(valAStr);
       }  
@@ -252,11 +314,19 @@ public class Interpreter {
          valA = valAStr;
       }
 
-      Token nextToken =
       else if (opToken.type == Token.TokenType.OP_WORD) {
          String varName = content.substring(0, content.length() - 1); 
          int idx = varTable.find(varName);
-         valA = (idx != -1) ? varTable.call(idx).call() : 0;
+
+         if (idx != -1) {
+            Variable v = varTable.call(idx);
+            valA = v.call();
+            variableAndFloat = v.variableType == Variable.varType.FLOAT;
+         }
+
+         else {
+            valA = 0;
+         }
       }
       else {
          valA = Integer.parseInt(valAStr);
@@ -271,7 +341,8 @@ public class Interpreter {
       else if (opChar == '*') type = oprtType.MUL;
       else type = oprtType.DIV;
 
-      return operationInterpreter(valA, valB, (opToken.type == Token.TokenType.OP_FLOAT), type);
+      if (variableAndFloat || opToken.type == Token.TokenType.OP_FLOAT) opFloat = true;
+      return operationInterpreter(valA, valB, opFloat, type);
    }
 
    private Object extractLiteral(Token t) {

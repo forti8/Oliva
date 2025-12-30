@@ -44,6 +44,8 @@ public class Token {
         SINGLE_QUOTE,
         BACKSLASH,
 
+        AUTO_INCREMENT,
+        AUTO_DECREMENT,
         SUM_INT,
         SUM_FLOAT,
         SUB_INT,

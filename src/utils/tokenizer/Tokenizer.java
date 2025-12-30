@@ -57,6 +57,10 @@ public class Tokenizer {
                 continue;
             }
 
+            else if (character == '#') {
+                break;
+            }
+
             // if it's a letter or underscore
             else if (Character.isLetter(character) || character == '_') {
 
@@ -166,6 +170,25 @@ public class Tokenizer {
             }
 
             else if (character == '+' || character == '-' || character == '*' || character == '/') {
+                
+                if (c + 1 < length && this.separatedLine.charAt(c + 1) == '+' && character == '+') {
+                    Token t = new Token();
+                    t.setContent("++");
+                    t.setType(Token.TokenType.AUTO_INCREMENT);
+                    list.add(t);
+                    c += 2;
+                    continue;
+                }
+
+                else if (c + 1 < length && this.separatedLine.charAt(c + 1) == '-' && character == '-') {
+                    Token t = new Token();
+                    t.setContent("--");
+                    t.setType(Token.TokenType.AUTO_DECREMENT);
+                    list.add(t);
+                    c += 2;
+                    continue;
+                }
+
                 Token pT = list.isEmpty() ? null : list.get(list.size() - 1);
                 
                 if (pT != null) {
@@ -270,33 +293,6 @@ public class Tokenizer {
                 c++;
                 continue;
             }
-
-            // else if (character == '"') {
-
-            //     int start = c;
-            //     c++;
-
-            //     StringBuilder strContent = new StringBuilder();
-
-            //     while (c < length && this.separatedLine.charAt(c) != '"') {
-            //         strContent.append(this.separatedLine.charAt(c));
-            //         c++;
-            //     }
-
-            //     if (c < length && this.separatedLine.charAt(c) == '"') {
-            //         c++;
-            //     } 
-                
-            //     else {
-            //         throw new RuntimeException("Lexical error: unclosed string literal at position " + start);
-            //     }
-
-            //     Token t = new Token();
-            //     t.setContent(strContent.toString());
-            //     t.setType(Token.TokenType.STR);
-            //     list.add(t);
-            //     continue;
-            // }
 
             else if (character == '\'') {
                 int start = c;

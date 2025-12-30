@@ -10,6 +10,11 @@ public class Variable {
     public String variableName;
     public varType variableType;
     private long memoryLocation;
+    private int memorySize = 0;
+
+    public void SetMemorySize (int memoSize) {
+        this.memorySize = memoSize;
+    }
    
     public Object call () {
 
@@ -51,8 +56,14 @@ public class Variable {
         return memoValue;
     } 
 
+
+    /*
+        mudança necessaria para definir o tamanho em bytes
+        criar a função readByte e writeByte
+    */
     public void define (Object value) {
 
+        int sz = 1;
         if (value != null) {
             switch (this.variableType) {
                 case STR:
@@ -68,12 +79,16 @@ public class Variable {
                 break;
     
                 case INT:
-                    this.memoryLocation = Memory.Alloc(4);
+                    sz = this.memorySize > 0 ? this.memorySize : 4; 
+                    System.out.println(sz);
+                    this.memoryLocation = Memory.Alloc(sz);
                     Memory.WriteInt(this.memoryLocation, (int) value);
                 break;
     
                 case FLOAT:
-                    this.memoryLocation = Memory.Alloc(4);
+                    sz = this.memorySize > 0 ? this.memorySize : 4; 
+                    System.out.println(sz);
+                    this.memoryLocation = Memory.Alloc(sz);
                     Memory.WriteFloat(this.memoryLocation, (float) value);
                 break;
     
@@ -94,27 +109,28 @@ public class Variable {
         else {
             switch (this.variableType) {
                 case STR:
-                    String str = "";
-                    byte[] bytes = str.getBytes();
-    
-                    this.memoryLocation = Memory.Alloc(bytes.length + 1);
-                    Memory.WriteChar(this.memoryLocation + bytes.length, '\0');
+                    sz = this.memorySize > 0 ? this.memorySize : 1; 
+                    this.memoryLocation = Memory.Alloc(sz + 1);
+                    Memory.WriteChar(this.memoryLocation + sz, '\0');
                 break;
     
                 case INT:
-                    this.memoryLocation = Memory.Alloc(4);
+                    sz = this.memorySize > 0 ? this.memorySize : 4; 
+                    System.out.println(sz);
+                    this.memoryLocation = Memory.Alloc(sz);
                 break;
     
                 case FLOAT:
-                    this.memoryLocation = Memory.Alloc(4);
+                    sz = this.memorySize > 0 ? this.memorySize : 4; 
+                    this.memoryLocation = Memory.Alloc(sz);
                 break;
     
                 case CHAR:
-                    this.memoryLocation = Memory.Alloc(1);
+                    this.memoryLocation = Memory.Alloc(sz);
                 break;
     
                 case BOOL:
-                    this.memoryLocation = Memory.Alloc(1);
+                    this.memoryLocation = Memory.Alloc(sz);
                 break;
     
                 default:

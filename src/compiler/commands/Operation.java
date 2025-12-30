@@ -12,14 +12,16 @@ public class Operation {
     }
 
     public Object sum() {
-        if (leftValue instanceof String || rightValue instanceof String) {
+
+        boolean isConcat = leftValue instanceof String || rightValue instanceof String;
+        if (isConcat) {
             return concat();
         }
 
         if (!floatOperation) {
-            return ((Number) leftValue).intValue() + ((Number) rightValue).intValue();
+            return (int) ((Number) leftValue).floatValue() + ((Number) rightValue).floatValue();
         }
-        return ((Number) leftValue).floatValue() + ((Number) rightValue).floatValue();
+        return (float) ((Number) leftValue).floatValue() + ((Number) rightValue).floatValue();
     }
 
     public Object sub() {

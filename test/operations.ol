@@ -1,4 +1,3 @@
-var a:int = 2
-var b:int = 2
-a = a*b
-print(a)
+var<5> numeroInteiro:int = 2147483647
+
+print(numeroInteiro)
